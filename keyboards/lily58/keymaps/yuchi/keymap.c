@@ -156,12 +156,29 @@ bool oled_task_user(void) {
 }
 #endif // OLED_ENABLE
 
+static unsigned int type_count = 0;
+void count_type(void) {
+    type_count++;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
 #ifdef OLED_ENABLE
-    set_keylog(keycode, record);
+    // set_keylog(keycode, record);
+    count_type();
 #endif
     // set_timelog();
   }
   return true;
+}
+void oled_write_type_count(void) {
+    static char type_count_str[7];
+    oled_write_P(PSTR("Type count: "), false);
+    itoa(type_count, type_count_str, 10);
+    oled_write_ln(type_count_str, false);
+}
+
+bool oled_task_user(void) {
+    oled_write_type_count();
+    return false;
 }
